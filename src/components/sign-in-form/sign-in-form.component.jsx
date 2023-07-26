@@ -1,8 +1,9 @@
 import { useState } from "react"
-import { signInWithGooglePopUp, createUserDocumentFromAuth, signInAuthUserWithEmailAndPassword } from "../../utils/firebase/firebase.utils"
+import { signInWithGooglePopUp, signInAuthUserWithEmailAndPassword } from "../../utils/firebase/firebase.utils"
 
 import Button from "../../components/button/button.component"
 import FormInput from "../../components/form-input/form-input.component"
+
 import './sign-in-form.styles.scss'
 
 const defaultFormFields = {
@@ -18,12 +19,16 @@ const SignInForm = () => {
         setFormFields(defaultFormFields)
     }
 
+    const signInWithGoogle = async () => {
+        await signInWithGooglePopUp()
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault()
 
         try {
-            const { user } = await signInAuthUserWithEmailAndPassword(email, password)
-            await createUserDocumentFromAuth(user)
+            await signInAuthUserWithEmailAndPassword(email, password)
+            
             resetFormFields()
         } catch (error) {
             if (error.code === 'auth/user-not-found') {
@@ -44,12 +49,6 @@ const SignInForm = () => {
         setFormFields({ ...formFields, [name]: value })
     }
 
-    const signInWithGoogle = async () => {
-        const { user } = await signInWithGooglePopUp()
-        const userDocRef = await createUserDocumentFromAuth(user)
-
-        console.log(userDocRef);
-    }
 
     return (
         <div className="sign-in-containers">
